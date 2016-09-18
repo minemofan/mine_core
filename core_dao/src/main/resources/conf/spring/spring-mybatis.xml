@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"  
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:tx="http://www.springframework.org/schema/tx"  
+    xmlns:jpa="http://www.springframework.org/schema/data/jpa"  
+    xmlns:security="http://www.springframework.org/schema/security"  
+    xsi:schemaLocation="  
+    	http://www.springframework.org/schema/mvc	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd   
+        http://www.springframework.org/schema/aop	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd  
+        http://www.springframework.org/schema/security	 http://www.springframework.org/schema/security/spring-security-3.2.xsd  
+        http://www.springframework.org/schema/beans	  http://www.springframework.org/schema/beans/spring-beans-4.0.xsd     
+        http://www.springframework.org/schema/data/jpa   http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd 
+        http://www.springframework.org/schema/tx    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context   http://www.springframework.org/schema/context/spring-context-4.0.xsd">  
+	
+	<!-- 支持spring3.0新的mvc注解 -->
+	<mvc:annotation-driven /> 
+	
+<!-- 1.引入 jdbc配置文件：方式1 -->
+	<bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">  
+       <property name="locations">  
+           <list>  
+               	<value>classpath:jdbc.properties</value>
+				<value>classpath:/conf/properties/conf.properties</value> 
+				<value>classpath:/conf/properties/aliyun.properties</value> 
+           </list>  
+       </property>  
+    </bean>  
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">  
+        <property name="properties" ref="configProperties" />  
+    </bean>  
+	
+	<!-- 方式2：缺点在Controller中不能获取得到，其内部参数
+	<bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+			</list>
+		</property>
+	</bean> -->
+	
+	
+<!-- 2.配置数据源 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}"></property>
+		<property name="url" value="${jdbc.url}"></property>
+		<property name="username" value="${jdbc.username}"></property>	
+		<property name="password" value="${jdbc.password}"></property>
+		
+		<property name="initialSize" value="${druid.initialSize}"></property>
+		<property name="maxIdle" value="${druid.maxIdle}"></property>
+		<property name="maxWait" value="${druid.maxWait}"></property>
+		<property name="removeAbandoned" value="${druid.removeAbandoned}"></property>
+		<property name="removeAbandonedTimeout" value="${druid.removeAbandonedTimeout}"></property>
+		<property name="timeBetweenEvictionRunsMillis" value="${druid.timeBetweenEvictionRunsMillis}"></property>
+		<property name="minEvictableIdleTimeMillis" value="${druid.minEvictableIdleTimeMillis}"></property>
+		<property name="validationQuery" value="${druid.validationQuery}"></property>
+		<property name="testWhileIdle" value="${druid.testWhileIdle}"></property>
+		<property name="testOnBorrow" value="${druid.testOnBorrow}"></property>
+		<property name="testOnReturn" value="${druid.testOnReturn}"></property>
+		<property name="poolPreparedStatements" value="${druid.poolPreparedStatements}"></property>
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="${druid.maxPoolPreparedStatementPerConnectionSize}"></property>
+		<property name="filters" value="${druid.filters}"></property>
+	</bean>
+<!-- 3.创建session工厂：制定数据源、自动扫描mapping XML  -->
+	<!-- 创建Mybatis SessionFactory  指定sqlMap文件目录  -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:org/minemofan/core/mapper/*/impl/*Mapper.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- dao包(自动注入) -->
+		<!-- MapperScannerConfigurer它将会查找类路径下的Mapper映射器（*.java相当于Dao接口）并自动将它们创建成MapperFactoryBean
+			* 需要跟sqlSessionFactory中配置扫描的mapper xml配对使用。
+			* xxxMapper.xml 中<mapper namespace=""> namespace必须是xxxxMapper.java接口的路径，不然要运行的时候要报错 “is not known to the MapperRegistry”
+			* xxxMapper.xml中的id要跟xxxMapper.java中的方法名称一致才能找到该SQL
+			* 最好限于model（Entity）跟表结构一致的表的操作，避免那些自定义的model也放在此目录中混淆，不好管理
+			-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="org.minemofan.core.mapper" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean> 
+	
+	
+	<!-- 创建连接池代理 -->
+	<bean id="dataSourceProxy" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+        <property name="targetDataSource" ref="dataSource"/>
+    </bean>
+    
+	<!-- jdbc -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSourceProxy"/>
+	</bean>
+	
+	
+	
+<!-- 4.事务管理   将jdbcTemplate使用一并交给Hibernate事务管理，需要jdbcTemplate与sessionFactory必须使用同一个DataSource -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 配置事务：注解方式 
+	<tx:annotation-driven transaction-manager="transactionManager" /> -->	
+	<!-- 配置事务：AOP拦截器方式 -->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="RuntimeException"/>
+			<tx:method name="append*" propagation="REQUIRED" rollback-for="RuntimeException"/>
+			<tx:method name="save*" propagation="REQUIRED" rollback-for="RuntimeException"/>
+			<tx:method name="update*" propagation="REQUIRED"  rollback-for="Exception"/>
+			<tx:method name="modify*" propagation="REQUIRED" rollback-for="RuntimeException"/>
+			<tx:method name="edit*" propagation="REQUIRED"  rollback-for="RuntimeException"/>
+			<tx:method name="insert*" propagation="REQUIRED"  rollback-for="Exception"/>
+			<tx:method name="delete*" propagation="REQUIRED"  rollback-for="RuntimeException"/>
+			<tx:method name="remove*" propagation="REQUIRED"  rollback-for="RuntimeException"/>
+			<tx:method name="repair" propagation="REQUIRED"  rollback-for="RuntimeException"/>
+			<tx:method name="*AOP" propagation="REQUIRED" rollback-for="Exception"/>
+			<tx:method name="*BO" propagation="REQUIRED" rollback-for="Exception"/>
+			
+			<tx:method name="get*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="load*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="search*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="datagrid*" propagation="REQUIRED" read-only="true" />
+
+			<tx:method name="*" propagation="REQUIRED" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="transactionPointcut" expression="execution(* org.minemofan.core.service.*.impl.*Impl.*(..))" />
+		<aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice" />
+	</aop:config>
+	
+	
+</beans>

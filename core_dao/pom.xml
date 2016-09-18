@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.minemofan.core</groupId>
+    <artifactId>mine_core</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+  </parent>
+  <artifactId>core_dao</artifactId>
+  <packaging>jar</packaging>
+  <name>core_dao</name>
+  <url>http://maven.apache.org</url>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <dependencies>
+    <!-- 其他maven工程包  -->
+  	<dependency>
+	   <groupId>org.minemofan.core</groupId>
+	   <artifactId>core_pojo</artifactId>
+	     <version>${project.version}</version>
+	</dependency>
+	<dependency>
+	   <groupId>org.minemofan.core</groupId>
+	   <artifactId>core_common</artifactId>
+	     <version>${project.version}</version>
+	</dependency>
+	
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+  </dependencies>
+  
+  <build>
+  	<!-- 编译时将目录下的XML也放到CLASSES中 -->
+  	 <resources>
+         <resource>
+           <directory>src/main/java/org/minemofan/core/mapper/*/impl/</directory>
+           <includes>
+               <include>*.xml</include>
+           </includes>
+           <filtering>true</filtering>
+         </resource>
+      </resources>
+  </build>
+</project>

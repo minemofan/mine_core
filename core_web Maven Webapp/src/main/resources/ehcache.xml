@@ -1,0 +1,43 @@
+<ehcache>
+	<diskStore path="java.io.tmpdir"/>   <!-- 或者 c://myapp//cache -->
+　	<defaultCache	
+		maxElementsInMemory="100" 
+		eternal="false" 
+		timeToIdleSeconds="300" 
+		timeToLiveSeconds="300"
+		overflowToDisk="true"
+		maxElementsOnDisk="500"
+		diskPersistent="false" 
+		diskExpiryThreadIntervalSeconds="120" />
+	
+	<cache name="SimplePageCachingFilter"
+		maxElementsInMemory="100"
+		maxElementsOnDisk="100"
+		eternal="false" 
+		overflowToDisk="true"
+		diskSpoolBufferSizeMB="20"
+		timeToIdleSeconds="60"
+		timeToLiveSeconds="60"
+		memoryStoreEvictionPolicy="LFU"/>
+		
+	<cache name="objectCacheToSpring"
+        maxElementsInMemory="10000"
+        eternal="false"
+        overflowToDisk="true"
+        timeToIdleSeconds="1800"
+        timeToLiveSeconds="3600"
+        memoryStoreEvictionPolicy="LFU" />
+</ehcache>
+<!-- 
+diskStore表示当内存缓存中对象数量超过类设置内存缓存数量时，将缓存对象写到硬盘
+		，path=”java.io.tmpdir”表示把数据写到这个目录下。Java.io.tmpdir目录在运行时会根据相对路径生成。
+ -->
+<!--
+maxElementsInMemory		缓存中允许创建的最大对象数		
+eternal					对象是否永久有效，一但设置了，timeout将不起作用
+overflowToDisk			当内存中对象数量达到maxElementsInMemory时，Ehcache将会对象写到磁盘中。
+timeToIdleSeconds（秒）	设置对象在失效前的允许闲置时间（单位：秒）。仅当eternal=false对象不是永久有效时使用，可选属性，默认值是0，也就是可闲置时间无穷大。
+timeToLiveSeconds（秒）	设置对象在失效前允许存活时间（单位：秒）。最大时间介于创建时间和失效时间之间。仅当eternal=false对象不是永久有效时使用，默认是0.，也就是对象存活时间无穷大。
+maxElementsOnDisk		硬盘最大缓存个数
+-->
+

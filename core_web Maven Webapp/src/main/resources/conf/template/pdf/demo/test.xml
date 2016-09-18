@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="GB2312"?>
+<root>
+	<header>Apache FOP 生成PDF</header>
+	<foot>
+		结尾啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊结啊啊啊啊啊啊啊啊啊啊啊结尾啊啊啊啊啊啊啊啊啊
+	</foot>
+	<persons>
+		<person>
+			<name>张三</name>
+			<age>30</age>
+		</person>
+		<person>
+		  	<name>李四</name>
+		  	<age>25</age>
+		</person>
+		<person>
+		  	<name>扎实</name>
+		  	<age>21</age>
+		</person>
+		<person>
+		  	<name>徐地方的 地方</name>
+		  	<age>24</age>
+		</person>
+		<person>
+		  	<name>姚林对方答复</name>
+		  	<age>26</age>
+		</person>
+		<person>
+		  	<name>苏是地方地方的惠</name>
+		  	<age>22</age>
+		</person>
+	</persons>
+	<nbsp> <![CDATA[     ]]> </nbsp>
+</root>
+

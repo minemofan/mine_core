@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
+	version="3.0">
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>	<!-- 定义Web应用的首页 -->
+	</welcome-file-list>
+	
+	<!-- Spring 装载配置   	 begin -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:applicationContext.xml</param-value>
+	</context-param>
+	<!-- Spring 装载配置   	 end -->	
+<!-- ========================================================================================================= Listener  -->
+	<!-- Spring listener配置:spring主监听、防止spring内存溢出监听器   	 begin -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>	
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<!-- Spring listener配置:spring主监听、防止spring内存溢出监听器   	  end -->
+	<!-- Timer listener监听器   begin -->
+	<!-- Timer listener监听器   	 end -->
+	<!-- Java listener监听器 	begin -->
+	<!-- Java listener监听器   	 end -->
+<!-- ========================================================================================================= Servlet  -->
+  <!-- SpringMVC Servlet配置  	   begin -->
+	<servlet>
+		<servlet-name>SpringMVC</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring-mvc.xml</param-value> 		<!-- spring MVC 配置文件 -->
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpringMVC</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SpringMVC</servlet-name>
+		<url-pattern>*.mvc</url-pattern>
+	</servlet-mapping>
+  <!-- SpringMVC Servlet配置  	    end -->
+  <!-- 阿里巴巴  Druid连接池  SQL监控统计功能  Servlet配置  	   begin -->
+  <servlet>
+    <servlet-name>DruidStatView</servlet-name>
+    <servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>   
+  </servlet>    
+  <servlet-mapping>
+    <servlet-name>DruidStatView</servlet-name>
+    <url-pattern>/druid/*</url-pattern>
+  </servlet-mapping>
+  <!-- 阿里巴巴  Druid连接池  SQL监控统计功能  Servlet配置  	   end -->
+<!-- ========================================================================================================= Filter  -->
+  <!-- EhCache 页面缓存SimplePageCachingFilter过滤器配置		Begin -->
+  <!-- EhCache 页面缓存SimplePageCachingFilter过滤器配置		  end -->
+  <!-- Spring encodingFilter过滤器配置		begin -->							<!-- 过滤字符编码,使得请求或响应(Request、Response)统一设置编码-->		
+  <filter>
+		<description>字符集过滤器</description>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<description>字符集编码</description>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+  <!-- Spring encodingFilter过滤器配置		end -->
+  <!-- 阿里巴巴  Druid连接池  SQL监控统计功能  Filter过滤器配置  	   begin -->
+  <filter>
+	<filter-name>DruidWebStatFilter</filter-name>
+	<filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+	<init-param>
+		<param-name>exclusions</param-name>
+       	<param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+     <filter-name>DruidWebStatFilter</filter-name>
+     <url-pattern>/*</url-pattern>
+  </filter-mapping> 
+  <!-- 阿里巴巴  Druid连接池  SQL监控统计功能  Filter过滤器配置  	   end -->
+<!-- ========================================================================================================= other framework --> 
+  <!-- start DWR配置 --> 
+  <!-- end DWR配置 -->
+  <!-- WebService CXF 配置 	begin -->
+  <!-- WebService CXF 配置	  end -->
+<!-- ========================================================================================================= other  -->
+  <!-- Log4j配置		begin -->
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/classes/log4j.properties</param-value>
+  </context-param>
+  <listener>														<!-- 监听器,用于初始化log4j日志框架的 -->
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+  <!-- Log4j配置		end -->
+  <!-- MIME类型 		begin -->											
+  <mime-mapping>													<!-- 用户告诉服务器把doc、xls当作text打开 -->
+    <extension>doc</extension>
+    <mime-type>application/msword</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>xls</extension>
+    <mime-type>application/msexcel</mime-type>
+  </mime-mapping>
+  <!-- MIME类型 		end -->
+  <!-- JSP配置		begin -->  
+  <jsp-config>  
+	<jsp-property-group>  
+	  <url-pattern>*.jsp </url-pattern>  							<!-- 设定值所影响的范围 -->
+	  <el-ignored>false </el-ignored>  								<!-- 若为true，表示不支持EL 语法；默认为false -->
+	</jsp-property-group>  
+  </jsp-config>
+  <!-- JSP配置		end -->  
+  <!-- Session过期	begin -->
+  <session-config>
+  	<session-timeout>30</session-timeout>  	 						<!-- 单位:分钟 -->
+  </session-config>
+  <!-- Session过期	end -->
+</web-app>

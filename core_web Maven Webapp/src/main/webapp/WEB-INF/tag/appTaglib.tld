@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee　web- jsptaglibrary_2_0.xsd"
+	version="2.0">
+	
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>2.0</jsp-version>
+　　 <short-name>apptag</short-name>
+　　 <uri>http://www.mofan.org/apptag</uri> 					<!--　定义该标签库的URI　-->
+
+ 	<!--　定义第一个标签 	测试 Begin-->
+ 	<tag>
+		<description>常用JavaScript</description>					
+　　　　 <name>appjs</name>								 	 		<!--　定义标签名　-->
+　　　　 <tag-class>org.expand.tag.AppJavaScriptTag</tag-class>	<!--　定义标签处理类　-->
+　　　　 <body-content>empty</body-content>							<!--　定义标签体为空　-->
+		<attribute>													<!-- 定义标签属性 -->
+			<name>type</name>
+			<required>false</required>
+			<fragment>false</fragment>
+		</attribute>	
+　　 </tag>
+	
+</taglib>
+<!-- 
+ tld tag标签属性：
+ 	1、description：用于指定属性的描述信息。
+	2、name：用于指定属性的名称。大小写敏感 ，不能以JSP\_jsp\java和sun开头
+	3、required：用于指定在JSP页面中调用自定义标签时是否必须设置这个属性。默认false
+	4、rtexprvale：用于指定属性值是一个静态值或动态值。默认 false
+		e.g:  false表示只能为该属性指定静态文本值。例如 ”123“
+		      true表示可以为该属性指定一个JSP动态元素，动态元素作为属性值。例如<%= value%>
+	5、fragment：是否支持JSP脚本、表达式等动态内容。
+ -->
